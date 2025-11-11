@@ -110,10 +110,14 @@
                 return request(`${BASE}${path}`, {method: 'POST', data: payload});
             }, historyMe: ({limit, page, timeFrom, timeTo} = {}) => {
                 const q = [];
-                if (limit != null) q.push(`${limit}`);
-                if (page != null) q.push(`${page}`);
-                if (timeFrom) q.push(`${dateToPathVariable(timeFrom)}`);
-                if (timeTo) q.push(`${dateToPathVariable(timeTo)}`);
+                if (!timeFrom) timeFrom = new Date(0)
+                q.push(`${dateToPathVariable(timeFrom)}`);
+                if (!timeTo) timeTo = new Date()
+                q.push(`${dateToPathVariable(timeTo)}`);
+                if (limit == null) limit = 20;
+                q.push(`${limit}`);
+                if (page == null) page = 1;
+                q.push(`${page}`);
                 const qs = q.length ? `/${q.join('/')}` : '';
                 return request(`${BASE}/robot/history/me${qs}`);
             }, pieces: ({chatId, limit}) => {
@@ -159,10 +163,14 @@
             },
             feedbackReadList: ({limit, page, timeFrom, timeTo} = {}) => {
                 const q = [];
-                if (timeFrom) q.push(`${dateToPathVariable(timeFrom)}`);
-                if (timeTo) q.push(`${dateToPathVariable(timeTo)}`);
-                if (limit != null) q.push(`${limit}`);
-                if (page != null) q.push(`${page}`);
+                if (!timeFrom) timeFrom = new Date(0)
+                q.push(`${dateToPathVariable(timeFrom)}`);
+                if (!timeTo) timeTo = new Date()
+                q.push(`${dateToPathVariable(timeTo)}`);
+                if (limit == null) limit = 20;
+                q.push(`${limit}`);
+                if (page == null) page = 1;
+                q.push(`${page}`);
                 const qs = q.length ? `/${q.join('/')}` : '';
                 return request(`${BASE}/admin/feedback/read${qs}`);
             },
@@ -171,34 +179,46 @@
                 if (read !== true) read = false;
                 const base = `${BASE}/admin/feedback/user/${userId}/${read}`;
                 const q = [];
-                if (limit != null) q.push(`limit=${limit}`);
-                if (page != null) q.push(`page=${page}`);
+                if (limit == null) limit = 20;
+                q.push(`${limit}`);
+                if (page == null) page = 1;
+                q.push(`${page}`);
                 const qs = q.length ? `/${q.join('/')}` : '';
                 return request(`${base}${qs}`);
             },
             robotHistoryUser: ({userId, timeFrom, timeTo, limit, page}) => {
                 const q = [];
-                if (timeFrom) q.push(`${dateToPathVariable(timeFrom)}`);
-                if (timeTo) q.push(`${dateToPathVariable(timeTo)}`);
-                if (limit != null) q.push(`${limit}`);
-                if (page != null) q.push(`${page}`);
+                if (!timeFrom) timeFrom = new Date(0)
+                q.push(`${dateToPathVariable(timeFrom)}`);
+                if (!timeTo) timeTo = new Date()
+                q.push(`${dateToPathVariable(timeTo)}`);
+                if (limit == null) limit = 20;
+                q.push(`${limit}`);
+                if (page == null) page = 1;
+                q.push(`${page}`);
                 const qs = q.length ? `/${q.join('/')}` : '';
                 return request(`${BASE}/admin/robot/history/${userId}${qs}`);
             },
             actionCostLongerThan: ({ms, limit, page}) => {
                 const q = [];
-                if (limit != null) q.push(`${limit}`);
-                if (page != null) q.push(`${page}`);
+                if (limit == null) limit = 20;
+                q.push(`${limit}`);
+                if (page == null) page = 1;
+                q.push(`${page}`);
                 const qs = q.length ? `/${q.join('/')}` : '';
                 let url = `${BASE}/admin/action/cost/${ms}${qs}`;
                 return request(url);
             },
             actionRequestTimeLatest: ({timeFrom, timeTo, limit, page} = {}) => {
                 const q = [];
-                if (timeFrom) q.push(`${dateToPathVariable(timeFrom)}`);
-                if (timeTo) q.push(`${dateToPathVariable(timeTo)}`);
-                if (limit != null) q.push(`${limit}`);
-                if (page != null) q.push(`${page}`);
+                if (!timeFrom) timeFrom = new Date(0)
+                q.push(`${dateToPathVariable(timeFrom)}`);
+                if (!timeTo) timeTo = new Date()
+                q.push(`${dateToPathVariable(timeTo)}`);
+                if (limit == null) limit = 20;
+                q.push(`${limit}`);
+                if (page == null) page = 1;
+                q.push(`${page}`);
                 const qs = q.length ? `/${q.join('/')}` : '';
                 return request(`${BASE}/admin/action/request-time-latest${qs}`);
             },
