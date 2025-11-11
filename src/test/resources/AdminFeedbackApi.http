@@ -1,0 +1,142 @@
+
+### 未读查询 time-from-to-limit-page
+< {%
+    request.variables.set("time-from", "2025-11-08 18:34:37")
+    request.variables.set("time-to", "2025-11-08 18:41:37")
+    request.variables.set("limit", "4")
+    request.variables.set("page", "1")
+%}
+GET http://{{host}}:8080/admin/feedback/not-read/{{time-from}}/{{time-to}}/{{limit}}/{{page}}
+Content-Type: application/json
+authorization: {{authorization}}
+
+### 未读查询 time-from-to-limit
+< {%
+    request.variables.set("time-from", "2025-11-08 18:34:37")
+    request.variables.set("time-to", "2025-11-08 18:41:37")
+    request.variables.set("limit", "4")
+%}
+GET http://{{host}}:8080/admin/feedback/not-read/{{time-from}}/{{time-to}}/{{limit}}
+Content-Type: application/json
+authorization: {{authorization}}
+
+
+### 未读查询 time-from-to
+< {%
+    request.variables.set("time-from", "2025-11-08 18:34:37")
+    request.variables.set("time-to", "2025-11-08 18:41:37")
+%}
+GET http://{{host}}:8080/admin/feedback/not-read/{{time-from}}/{{time-to}}
+Content-Type: application/json
+authorization: {{authorization}}
+
+
+### 未读查询 time-from
+< {%
+    request.variables.set("time-from", "2025-11-08 18:34:37")
+%}
+GET http://{{host}}:8080/admin/feedback/not-read/{{time-from}}
+Content-Type: application/json
+authorization: {{authorization}}
+
+### 未读查询
+GET http://{{host}}:8080/admin/feedback/not-read
+Content-Type: application/json
+authorization: {{authorization}}
+
+
+### 已读查询 time-from-to-limit-page
+< {%
+    request.variables.set("time-from", "2025-11-08 21:34:37")
+    request.variables.set("time-to", "2025-11-08 21:41:37")
+    request.variables.set("limit", "4")
+    request.variables.set("page", "1")
+%}
+GET http://{{host}}:8080/admin/feedback/read/{{time-from}}/{{time-to}}/{{limit}}/{{page}}
+Content-Type: application/json
+authorization: {{authorization}}
+
+### 已读查询 time-from-to-limit
+< {%
+    request.variables.set("time-from", "2025-11-08 21:34:37")
+    request.variables.set("time-to", "2025-11-08 21:41:37")
+    request.variables.set("limit", "4")
+%}
+GET http://{{host}}:8080/admin/feedback/read/{{time-from}}/{{time-to}}/{{limit}}
+Content-Type: application/json
+authorization: {{authorization}}
+
+
+### 已读查询 time-from-to
+< {%
+    request.variables.set("time-from", "2025-11-08 21:34:37")
+    request.variables.set("time-to", "2025-11-08 21:41:37")
+%}
+GET http://{{host}}:8080/admin/feedback/read/{{time-from}}/{{time-to}}
+Content-Type: application/json
+authorization: {{authorization}}
+
+
+### 已读查询 time-from
+< {%
+    request.variables.set("time-from", "2025-11-08 21:34:37")
+%}
+GET http://{{host}}:8080/admin/feedback/read/{{time-from}}
+Content-Type: application/json
+authorization: {{authorization}}
+
+### 已读查询
+GET http://{{host}}:8080/admin/feedback/read
+Content-Type: application/json
+authorization: {{authorization}}
+
+### 将某用户的反馈标记为已读
+PUT http://{{host}}:8080/admin/feedback/read
+Content-Type: application/json
+authorization: {{authorization}}
+
+1987108296047480834
+
+
+
+### 查询某一特定用户的反馈-read-limit-page
+< {%
+    request.variables.set("user-id", "1985757499214168065")
+    request.variables.set("read", "0")
+    request.variables.set("limit", "4")
+    request.variables.set("page", "1")
+%}
+GET http://{{host}}:8080/admin/feedback/user/{{user-id}}/{{read}}/{{limit}}/{{page}}
+Content-Type: application/json
+authorization: {{authorization}}
+
+
+### 查询某一特定用户的反馈 指定read-limit
+< {%
+    request.variables.set("user-id", "1985757499214168065")
+    request.variables.set("read", "1")
+    request.variables.set("limit", "4")
+%}
+GET http://{{host}}:8080/admin/feedback/user/{{user-id}}/{{read}}/{{limit}}
+Content-Type: application/json
+authorization: {{authorization}}
+
+
+### 查询某一特定用户的反馈 指定是否已读
+< {%
+    request.variables.set("user-id", "1985757499214168065")
+    request.variables.set("read", "0")
+%}
+GET http://{{host}}:8080/admin/feedback/user/{{user-id}}/{{read}}
+Content-Type: application/json
+authorization: {{authorization}}
+
+
+### 查询某一特定用户的反馈
+< {%
+    request.variables.set("user-id", "1985757499214168065")
+%}
+GET http://{{host}}:8080/admin/feedback/user/{{user-id}}
+Content-Type: application/json
+authorization: {{authorization}}
+
