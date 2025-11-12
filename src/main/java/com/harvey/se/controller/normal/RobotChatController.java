@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-11-08 00:14
+ * @date 2025-11-11
  */
 @Slf4j
 @RestController
@@ -47,13 +47,18 @@ public class RobotChatController {
     @Resource
     private RedisIdWorker redisIdWorker;
 
-    @PostMapping(value = "/chat")
+    @PostMapping(value = "/chat/qwen")
     @ApiOperation(
-            "用户问问题, LLM进行回答, 回答使用流式回答. 在回答期间, 用户再问问题, 问题将被忽略. 请客户端阻止用户问问题. 有积分拿, 每日五次, 每次五分 ")
-    public Result<Long> streamChat(@RequestBody String message) throws InterruptedException {
-        // 生成一个ID, 表示这一次回答
-        return new Result<>(robotChatService.chat(UserHolder.getUser(), message, 0/*TODO 更多...*/));
-        // return new Result<>(redisIdWorker.nextId(RedisConstants.Chat.ID_GENERATOR));
+            "用户问问题, Qwen进行回答, 回答使用流式回答. 在回答期间, 用户再问问题, 问题将被忽略. 请客户端阻止用户问问题. 有积分拿, 每日五次, 每次五分 ")
+    public Result<Long> streamChatQwen(@RequestBody String message) throws InterruptedException {
+        return new Result<>(robotChatService.chat(UserHolder.getUser(), message, 0));
+    }
+
+    @PostMapping(value = "/chat/deepseek")
+    @ApiOperation(
+            "用户问问题, Deepseek进行回答, 回答使用流式回答. 在回答期间, 用户再问问题, 问题将被忽略. 请客户端阻止用户问问题. 有积分拿, 每日五次, 每次五分 ")
+    public Result<Long> streamChatDeepseek(@RequestBody String message) throws InterruptedException {
+        return new Result<>(robotChatService.chat(UserHolder.getUser(), message, 1));
     }
 
     @ApiOperation("获取文本片段")

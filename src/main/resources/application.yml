@@ -1,0 +1,82 @@
+server:
+  port: 8080
+spring:
+  jackson:
+    date-format: yyyy-MM-dd_HH:mm:ss
+    time-zone: Asia/Shanghai
+  application:
+    name: h-se
+  datasource:
+    #    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      url: jdbc:mysql://${h-se.db.host}:3306/h_se?useSSL=false&serverTimezone=UTC
+      username: root
+      password: ${h-se.db.password}
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      initialSize: 5
+      minIdle: 5
+      maxActive: 20
+      maxWait: 60000
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+  redis:
+    host: ${h-se.redis.host}
+    port: 6379
+    password: ${h-se.redis.password}
+    lettuce:
+      pool:
+        max-active: 10
+        max-idle: 10
+        min-idle: 1
+        time-between-eviction-runs: 10s
+  main:
+    allow-circular-references: true # 允许循环依赖
+logging:
+  level:
+    com.harvey.se: debug
+  pattern:
+    dateformat: HH:mm:ss:SSS
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler
+  type-aliases-package: com.harvey.se.pojo.entity
+knife4j:
+  enable: true
+  openapi:
+    title: h-se
+    description: "软件工程作业接口文档,被拦截的用户(未登录的),将没有返回值, 而是statue_code = 401"
+    email: harvey.blocks@outlook.com
+    concat: Harvey Blocks
+    url: https://www.baidu.com
+    version: v1.0.0
+    group:
+      default:
+        group-name: default
+        api-rule: package
+        api-rule-resources:
+          - com.harvey.se.controller
+h-se:
+  jwt:
+    location: classpath:h_se_jwt.jks
+    alias: h_se_jwt
+    password: ${h-se.jwt.jks.password} # 解析文件的密钥(文件本身也是密钥)
+    tokenTTL: ${h-se.jwt.jks.ttl}
+  auth:
+    include-paths:
+      - "/user/logout"
+      - "/user/me"
+      - "/user/update"
+      - "/user/one/**"
+      - "/user/points/history"
+      - "/consultation-content/**"
+      - "/feedback/**"
+      - "/gift/**"
+      - "/robot/**"
+      - "/admin/**"
+    root-auth-paths:
+      - "/admin/**"
+  constants:
+    authorization-header: "authorization"
+    redis-host: ${h-se.redis.host}
+    redis-password: ${h-se.redis.password}
