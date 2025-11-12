@@ -17,7 +17,7 @@ import java.util.Date;
  *
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-11-11 16:17
+ * @date 2025-11-11
  */
 @Component
 public class JwtTool {

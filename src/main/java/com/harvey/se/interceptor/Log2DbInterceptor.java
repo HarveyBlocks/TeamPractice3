@@ -19,7 +19,7 @@ import java.sql.Date;
  *
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-11-8 12:32
+ * @date 2025-11-11
  */
 @Slf4j
 @Component
@@ -45,6 +45,10 @@ public class Log2DbInterceptor implements HandlerInterceptor {
                                             UserActionLogDto.REQUEST_START_TIME);
         }
         Date requestDate = new Date((Long) attribute);
+        if (response.getStatus() == 404) {
+            // ignore 404
+            return;
+        }
         Integer status = statusFromResponse(response);
         UserActionLog userActionLog = new UserActionLog(
                 null,

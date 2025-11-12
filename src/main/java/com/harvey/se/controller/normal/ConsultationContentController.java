@@ -20,7 +20,7 @@ import javax.annotation.Resource;
  *
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-11-08 01:42
+ * @date 2025-11-11
  */
 @Slf4j
 @RestController
@@ -47,6 +47,6 @@ public class ConsultationContentController {
             ConsultationContentDto consultationContentDto) {
         // 更新自己的购车需求
         // 如果还没有, 就插入
-        return new Result<>(consultationContentService.upsert(UserHolder.currentUserId(), consultationContentDto));
+        return new Result<>(consultationContentService.upsert(UserHolder.getUser(), consultationContentDto));
     }
 }

@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  *
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-11-08 00:45
+ * @date 2025-11-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -26,8 +26,8 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 public class ConsultationContent {
     public static final ConsultationContent DEFAULT = new ConsultationContent(ConsultationContentDto.DEFAULT);
-    @TableField("user_id")
-    @TableId(type = IdType.INPUT)
+
+    @TableId(type = IdType.INPUT, value = "user_id")
     private Long userId;
     @TableField("lower_bound")
     private Integer lowerBound;

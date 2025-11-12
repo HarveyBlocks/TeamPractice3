@@ -149,6 +149,9 @@ window.PageAdmin = {
 									<tbody id="logTableBody"></tbody>
 								</table>
 							</div>
+							<nav class="mt-2" aria-label="日志分页">
+								<ul class="pagination pagination-sm mb-0" id="logPager"></ul>
+							</nav>
 						</div>
 					</div>
 				</div>
@@ -338,6 +341,11 @@ window.PageAdmin = {
 			let rows = [];
 			const r = await API.safe(API.admin.consultCombineAll, cPage, cLimit);
 			if (r.ok && Array.isArray(r.res?.data)) rows = r.res.data;
+			if (!rows.length && cPage > 1) {
+				// 当获取不到数据且不在第一页时，自动回退一页再次请求
+				cPage = Math.max(1, cPage - 1);
+				return renderConsult();
+			}
 			tb.innerHTML = rows.map(c => `
 				<tr>
 					<td data-label="用户ID">${c.userId || '—'}</td>
@@ -350,21 +358,21 @@ window.PageAdmin = {
 					<td data-label="燃料">${c.preferredFuelType || '—'}</td>
 				</tr>`).join('') ||
 					`<tr><td colspan="6">${App.showEmpty('暂无数据')}</td></tr>`;
+			const hasPrev = cPage > 1;
+			const hasNext = rows.length === cLimit;
+			// 根据是否还有数据控制分页按钮可用状态
 			pager.innerHTML = `
-				<li class="page-item ${cPage <= 1 ?
-					'disabled' :
-					''}"><a class="page-link" href="#" data-c-page="${Math.max(
-					1, cPage - 1)}">上一页</a></li>
+				<li class="page-item ${hasPrev ? '' : 'disabled'}"><a class="page-link" href="#" data-c-page="${hasPrev ? Math.max(1, cPage - 1) : cPage}">上一页</a></li>
 				<li class="page-item active"><span class="page-link">${cPage}</span></li>
-				<li class="page-item"><a class="page-link" href="#" data-c-page="${cPage +
-			1}">下一页</a></li>`;
+				<li class="page-item ${hasNext ? '' : 'disabled'}"><a class="page-link" href="#" data-c-page="${hasNext ? (cPage + 1) : cPage}">下一页</a></li>`;
 			App.showToast('咨询数据已更新', 'success');
 		};
 		root.querySelector('#consultPager')?.addEventListener('click', (e) => {
 			if (e.target.matches('[data-c-page]')) {
 				e.preventDefault();
-				cPage = +e.target.getAttribute('data-c-page');
-				if (cPage < 1) cPage = 1;
+				const nextPage = +e.target.getAttribute('data-c-page');
+				if (!Number.isFinite(nextPage) || nextPage === cPage) return;
+				cPage = Math.max(1, nextPage);
 				renderConsult();
 			}
 		});
@@ -464,7 +472,7 @@ window.PageAdmin = {
 					if (!id) return;
 					App.confirm('确认下架该礼品？', async () => {
 						App.showToast('正在下架礼品...', 'warning');
-						const r = await API.safe(API.admin.giftDelete, +id);
+						const r = await API.safe(API.admin.giftDelete, id);
 						if (r.ok) {
 							App.showToast('已下架');
 							renderGifts();
@@ -474,14 +482,22 @@ window.PageAdmin = {
 		renderGifts();
 
 		// 行为日志
-		const renderLogs = async () => {
+		let logPage = 1, logLimit = 10;
+		const renderLogs = async ({resetPage = false} = {}) => {
+			if (resetPage) logPage = 1;
 			const tb = root.querySelector('#logTableBody');
+			const pager = root.querySelector('#logPager');
 			tb.innerHTML = `<tr><td colspan="6">${App.showLoading()}</td></tr>`;
 			const ms = +(root.querySelector('#logMs').value || 500);
-			App.showToast(`正在查询耗时 ≥ ${ms} ms 的请求...`, 'warning');
+			App.showToast(`正在查询耗时 ≥ ${ms} ms 的请求（第 ${logPage} 页）...`, 'warning');
 			const r = await API.safe(
-					API.admin.actionCostLongerThan, {ms: ms, limit: 10, page: 1});
+					API.admin.actionCostLongerThan, {ms: ms, limit: logLimit, page: logPage});
 			const rows = r.ok && Array.isArray(r.res?.data) ? r.res.data : [];
+			if (!rows.length && logPage > 1) {
+				// 无数据时回退一页，避免停留在空页
+				logPage = Math.max(1, logPage - 1);
+				return renderLogs();
+			}
 			tb.innerHTML = rows.map(a => `
 				<tr>
 					<td data-label="时间">${a.requestTime || '—'}</td>
@@ -492,9 +508,27 @@ window.PageAdmin = {
 					<td data-label="IP">${a.ipAddress || '—'}</td>
 				</tr>`).join('') ||
 					`<tr><td colspan="6">${App.showEmpty('暂无数据')}</td></tr>`;
+			if (pager) {
+				const hasPrev = logPage > 1;
+				const hasNext = rows.length === logLimit;
+				// 依据返回条数动态控制分页按钮
+				pager.innerHTML = `
+					<li class="page-item ${hasPrev ? '' : 'disabled'}"><a class="page-link" href="#" data-log-page="${hasPrev ? Math.max(1, logPage - 1) : logPage}">上一页</a></li>
+					<li class="page-item active"><span class="page-link">${logPage}</span></li>
+					<li class="page-item ${hasNext ? '' : 'disabled'}"><a class="page-link" href="#" data-log-page="${hasNext ? (logPage + 1) : logPage}">下一页</a></li>`;
+			}
 			App.showToast('日志已更新', 'success');
 		};
-		root.querySelector('#btnLoadLogs')?.addEventListener('click', renderLogs);
+		root.querySelector('#btnLoadLogs')?.addEventListener('click', () => renderLogs({resetPage: true}));
+		root.querySelector('#logPager')?.addEventListener('click', (e) => {
+			if (e.target.matches('[data-log-page]')) {
+				e.preventDefault();
+				const targetPage = +e.target.getAttribute('data-log-page');
+				if (!Number.isFinite(targetPage) || targetPage === logPage) return;
+				logPage = Math.max(1, targetPage);
+				renderLogs();
+			}
+		});
 		renderLogs();
 
 		// 设置：保存 BASE

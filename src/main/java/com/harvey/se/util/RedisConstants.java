@@ -5,7 +5,7 @@ package com.harvey.se.util;
  *
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2024-02-01 15:17
+ * @date 2025-11-11
  */
 public class RedisConstants {
     public static final Long ENTITY_CACHE_TTL = 30 * 60L;
@@ -18,6 +18,7 @@ public class RedisConstants {
         public static final String FEEDBACK = CACHE_KEY_PRE + "point:feedback:";
 
         public static final String CHAT = CACHE_KEY_PRE + "point:chat:";
+        public static final String CONSULTATION_CONTENT =  CACHE_KEY_PRE + "point:consultation:";
     }
 
     public static class User {

@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
  *
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-11-05 11:18
+ * @date 2025-11-11
  */
 @Data
 @AllArgsConstructor
@@ -79,7 +79,7 @@ public class UserInfoDto {
         );
     }
 
-    public static UserInfoDto adapte(ConsultationContentWithUserEntityDto withConsultationContentDto) {
+    public static UserInfoDto adapte(ConsultationContentWithUserInfoDto withConsultationContentDto) {
         if (withConsultationContentDto == null) {
             throw new BadRequestException("请求的参数不存在");
         }

@@ -3,11 +3,9 @@ package com.harvey.se.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.harvey.se.pojo.dto.LoginFormDto;
-import com.harvey.se.pojo.dto.UpsertUserFormDto;
-import com.harvey.se.pojo.dto.UserDto;
-import com.harvey.se.pojo.dto.UserInfoDto;
+import com.harvey.se.pojo.dto.*;
 import com.harvey.se.pojo.entity.User;
+import com.harvey.se.pojo.enums.PointChangeReason;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -17,7 +15,7 @@ import java.util.List;
  *
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2024-02-01 14:10
+ * @date 2025-11-11
  */
 public interface UserService extends IService<User> {
     /**
@@ -63,16 +61,18 @@ public interface UserService extends IService<User> {
 
     UserDto queryUserById(Long userId);
 
-    UserInfoDto queryUserEntityById(Long userId);
+    UserInfoDto queryUserInfoById(Long userId);
 
-    List<UserInfoDto> queryUserEntityByPage(Page<User> page);
+    List<UserInfoDto> queryUserInfoByPage(Page<User> page);
 
-    void updateUserEntity(UserInfoDto newUser);
+    void updateUserInfo(UserInfoDto newUser);
 
     List<User> queryUserByPage(Page<User> page);
 
     void loadCache(Long id) throws InterruptedException;
 
 
-    void increasePoint(Long userId, int currentPoint, int point);
+    void increasePoint(Long userId, PointChangeReason reason, int currentPoint, int flow);
+
+    List<UserInfoDto> queryUserInfo(UserInfoQuery userInfoQuery, Page<User> page);
 }

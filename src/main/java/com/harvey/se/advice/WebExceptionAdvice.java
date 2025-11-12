@@ -8,6 +8,7 @@ import com.harvey.se.exception.UncompletedException;
 import com.harvey.se.pojo.vo.Null;
 import com.harvey.se.pojo.vo.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -19,7 +20,7 @@ import java.sql.SQLException;
  *
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2024-02-01 17:31
+ * @date 2025-11-11
  */
 @Slf4j
 @RestControllerAdvice
@@ -29,6 +30,12 @@ public class WebExceptionAdvice {
     public Result<Null> handleRuntimeException(RuntimeException e) {
         log.error(e.toString(), e);
         return new Result<>(500, "服务器异常,请稍后再试! 错误信息: " + e.getMessage());
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public Result<Null> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        log.warn("参数格式错误");
+        return new Result<>(403, "参数格式错误: " + e.getMessage());
     }
 
     @ExceptionHandler(BadRequestException.class)

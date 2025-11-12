@@ -5,19 +5,20 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.harvey.se.dao.UserMapper;
 import com.harvey.se.exception.BadRequestException;
 import com.harvey.se.exception.UnauthorizedException;
-import com.harvey.se.pojo.dto.LoginFormDto;
-import com.harvey.se.pojo.dto.UpsertUserFormDto;
-import com.harvey.se.pojo.dto.UserDto;
-import com.harvey.se.pojo.dto.UserInfoDto;
+import com.harvey.se.exception.UncompletedException;
+import com.harvey.se.pojo.dto.*;
 import com.harvey.se.pojo.entity.User;
+import com.harvey.se.pojo.enums.PointChangeReason;
 import com.harvey.se.properties.ConstantsProperties;
 import com.harvey.se.properties.JwtProperties;
+import com.harvey.se.service.PointService;
 import com.harvey.se.service.UserService;
 import com.harvey.se.util.*;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +40,7 @@ import java.util.stream.Collectors;
 /**
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2024-02-01 14:10
+ * @date 2025-11-11
  */
 @Service
 @Slf4j
@@ -221,15 +222,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (!StrUtil.isEmpty(nickname)) {
             user.setNickname(nickname);
         }
-        if (RegexUtils.isPasswordEffective(userDto.getPassword())) {
-            user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        } else {
-            throw new BadRequestException("密码个数错误, 应当是4~32位的字母、数字、下划线");
+        if (userDto.getPassword() != null) {
+            if (RegexUtils.isPasswordEffective(userDto.getPassword())) {
+                user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+            } else {
+                throw new BadRequestException("密码个数错误, 应当是4~32位的字母、数字、下划线");
+            }
         }
-        if (RegexUtils.isPhoneEffective(user.getPhone())) {
-            user.setPhone(userDto.getPhone());
-        } else {
-            throw new BadRequestException("电话格式错误");
+        if (userDto.getPhone() != null) {
+            if (RegexUtils.isPhoneEffective(userDto.getPhone())) {
+                user.setPhone(userDto.getPhone());
+            } else {
+                throw new BadRequestException("电话格式错误");
+            }
         }
         // ignore upsert of role
         // ignore upsert of points
@@ -369,7 +374,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public UserInfoDto queryUserEntityById(Long userId) {
+    public UserInfoDto queryUserInfoById(Long userId) {
         User user = this.getById(userId);
         if (user == null) {
             throw new BadRequestException("Unknown user of:" + userId);
@@ -378,12 +383,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public List<UserInfoDto> queryUserEntityByPage(Page<User> page) {
+    public List<UserInfoDto> queryUserInfoByPage(Page<User> page) {
         return queryUserByPage(page).stream().map(UserInfoDto::adapte).collect(Collectors.toList());
     }
 
     @Override
-    public void updateUserEntity(UserInfoDto newUser) {
+    public void updateUserInfo(UserInfoDto newUser) {
         if (newUser.getPhone() != null && !RegexUtils.isPhoneEffective(newUser.getPhone())) {
             // 不是合法的电话号码
             newUser.setPhone(null);
@@ -407,21 +412,46 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         this.queryUserByIdWithRedisson(id);
     }
 
+    @Resource
+    private PointService pointService;
+
     @Override
-    public void increasePoint(Long userId, int currentPoint, int point) {
+    public void increasePoint(Long userId, PointChangeReason reason, int currentPoint, int flow) {
         // 1. 更新数据
-        int nextPoint = currentPoint + point;
+        int nextPoint = currentPoint + flow;
         if (nextPoint < 0) {
             throw new BadRequestException("余额不足");
         }
         boolean updated = new LambdaUpdateChainWrapper<>(baseMapper).set(User::getPoints, nextPoint)
                 .eq(User::getId, userId)
                 .update();
-        // 2. 删除缓存
         if (!updated) {
-            throw new IllegalStateException(userId + "增加 point " + point + "失败!");
+            throw new IllegalStateException(userId + "Point 变化:  " + flow + "失败!");
         }
+        // 2. 删除缓存
         stringRedisTemplate.delete(RedisConstants.User.USER_CACHE_KEY + userId);
+        // 3. 记录历史
+        pointService.record(new PointsHistoryDto(null, userId, reason, flow, null));
+    }
+
+    @Override
+    public List<UserInfoDto> queryUserInfo(UserInfoQuery userInfoQuery, Page<User> page) {
+        return new LambdaQueryChainWrapper<>(baseMapper).like(
+                        empty(userInfoQuery.getPhone()),
+                        User::getPhone,
+                        userInfoQuery.getPhone()
+                )
+                .like(empty(userInfoQuery.getNickname()), User::getNickname, userInfoQuery.getNickname())
+                .like(userInfoQuery.getRole() != null, User::getRole, userInfoQuery.getRole())
+                .page(page)
+                .getRecords()
+                .stream()
+                .map(UserInfoDto::adapte)
+                .collect(Collectors.toList());
+    }
+
+    private boolean empty(String str) {
+        return str == null || str.isEmpty();
     }
 
 }

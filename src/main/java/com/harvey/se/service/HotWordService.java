@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-11-08 06:51
+ * @date 2025-11-11
  */
 public interface HotWordService extends IService<HotWord> {
     List<HotWordDto> top(Integer limit);

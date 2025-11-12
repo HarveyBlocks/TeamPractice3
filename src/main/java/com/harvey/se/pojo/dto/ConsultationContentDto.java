@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
  *
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-11-08 00:47
+ * @date 2025-11-11
  */
 @Data
 @NoArgsConstructor
@@ -48,7 +48,7 @@ public class ConsultationContentDto {
     @ApiModelProperty(value = "其他要求, 默认(无)")
     private String otherRequirements;
 
-    public static ConsultationContentDto adapte(ConsultationContentWithUserEntityDto withUserDto) {
+    public static ConsultationContentDto adapte(ConsultationContentWithUserInfoDto withUserDto) {
         if (withUserDto == null) {
             throw new BadRequestException("请求参数不存在");
         }

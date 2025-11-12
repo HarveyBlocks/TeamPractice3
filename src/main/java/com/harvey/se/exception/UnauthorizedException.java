@@ -5,7 +5,7 @@ package com.harvey.se.exception;
  *
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-11-11 15:09
+ * @date 2025-11-11
  */
 public class UnauthorizedException extends BadRequestException {
     public UnauthorizedException() {

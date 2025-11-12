@@ -1,5 +1,6 @@
 package com.harvey.se.controller.normal;
 
+import com.harvey.se.pojo.dto.ConsumeDto;
 import com.harvey.se.pojo.dto.GiftDto;
 import com.harvey.se.pojo.dto.GiftInfoDto;
 import com.harvey.se.pojo.vo.Null;
@@ -25,7 +26,7 @@ import java.util.List;
  *
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-11-08 01:06
+ * @date 2025-11-11
  */
 @Slf4j
 @RestController
@@ -39,31 +40,31 @@ public class GiftController {
     @Resource
     private ConstantsInitializer constantsInitializer;
 
-    @GetMapping(value = {"/all/{limit}/{page}", "/all/{limit}", "/all"})
+    @GetMapping(value = {"/all/{limit}/{page}", /*"/all/{limit}", "/all"*/})
     @ApiOperation("分页查询Gift的简略信息")
     @ApiResponse(code = 200, message = "按照id升序")
     public Result<List<GiftDto>> queryAll(
-            @PathVariable(value = "limit", required = false)
-            @ApiParam(value = "页长", defaultValue = ServerConstants.DEFAULT_PAGE_SIZE) Integer limit,
-            @PathVariable(value = "page", required = false) @ApiParam(value = "页号", defaultValue = "1")
-            Integer page) {
+            @PathVariable(value = "limit", required = true)
+            @ApiParam(value = "页长", defaultValue = ServerConstants.DEFAULT_PAGE_SIZE, required = true) Integer limit,
+            @PathVariable(value = "page", required = true)
+            @ApiParam(value = "页号", defaultValue = "1", required = true) Integer page) {
         // 不提供就使用默认值
         return new Result<>(giftService.queryByPage(constantsInitializer.initPage(page, limit)));
     }
 
-    @GetMapping(value = {"/cost-in-range/{lower}/{upper}/{limit}/{page}", "/cost-in-range/{lower}/{upper}/{limit}",
-            "/cost-in-range/{lower}/{upper}", "/cost-in-range/{lower}", "/cost-in-range",})
+    @GetMapping(value = {"/cost-in-range/{lower}/{upper}/{limit}/{page}", /*"/cost-in-range/{lower}/{upper}/{limit}",
+            "/cost-in-range/{lower}/{upper}", "/cost-in-range/{lower}", "/cost-in-range",*/})
     @ApiOperation("用预算的上下限来计算, 分页查询Gift的简略信息")
     @ApiResponse(code = 200, message = "使用升序排序")
     public Result<List<GiftDto>> queryCostInRange(
-            @PathVariable(value = "lower", required = false)
-            @ApiParam(value = "商品花费积分下限(包含)", defaultValue = "0") Integer lower,
-            @PathVariable(value = "upper", required = false) @ApiParam(value = "商品花费积分上限(包含), null表示无限大")
-            Integer upper,
-            @PathVariable(value = "limit", required = false)
-            @ApiParam(value = "页长", defaultValue = ServerConstants.DEFAULT_PAGE_SIZE) Integer limit,
-            @PathVariable(value = "page", required = false) @ApiParam(value = "页号", defaultValue = "1")
-            Integer page) {
+            @PathVariable(value = "lower", required = true)
+            @ApiParam(value = "商品花费积分下限(包含)", defaultValue = "0", required = true) Integer lower,
+            @PathVariable(value = "upper", required = true)
+            @ApiParam(value = "商品花费积分上限(包含), null表示无限大", required = true) Integer upper,
+            @PathVariable(value = "limit", required = true)
+            @ApiParam(value = "页长", defaultValue = ServerConstants.DEFAULT_PAGE_SIZE, required = true) Integer limit,
+            @PathVariable(value = "page", required = true)
+            @ApiParam(value = "页号", defaultValue = "1", required = true) Integer page) {
         // 按照花销排序, 使用升序排序
         return new Result<>(giftService.queryByCost(
                 ConstantsInitializer.initIntRange(lower, upper),
@@ -83,9 +84,9 @@ public class GiftController {
     @PutMapping(value = "/consume/")
     @ApiOperation("用用户自己的积分进行消费")
     public Result<Null> consume(
-            @RequestBody @ApiParam(value = "目标礼品id", required = true) Long id) {
+            @RequestBody @ApiParam(value = "目标礼品id", required = true) ConsumeDto consumeDto) {
         // 进行消费
-        giftService.consume(UserHolder.getUser(), id);
+        giftService.consume(UserHolder.getUser(), consumeDto.getId());
         return Result.ok();
     }
 }

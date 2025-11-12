@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
 /**
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-11-09 14:14
+ * @date 2025-11-11
  */
 @Data
 @EqualsAndHashCode(callSuper = false)

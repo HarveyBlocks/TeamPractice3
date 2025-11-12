@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-11-08 12:53
+ * @date 2025-11-11
  */
 public class ExecutorServiceUtil {
     public static ExecutorService newFixedThreadPool(int nThread, String eachNamePre) {

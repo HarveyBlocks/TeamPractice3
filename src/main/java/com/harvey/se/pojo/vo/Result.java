@@ -10,7 +10,7 @@ import lombok.Data;
  *
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2024-02-01 14:11
+ * @date 2025-11-11
  */
 @Data
 @AllArgsConstructor
@@ -18,7 +18,7 @@ import lombok.Data;
 public class Result<T> {
 
     @ApiModelProperty(
-            value = "是否成功",
+            value = "是否成功, 使用HTTP响应状态码",
             notes = "true,携带data;false,携带errorMsg")
     private Integer code;
     @ApiModelProperty(

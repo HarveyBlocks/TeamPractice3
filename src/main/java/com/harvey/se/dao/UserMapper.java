@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
  *
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-11-11 15:14
+ * @date 2025-11-11
  */
 @Mapper
 public interface UserMapper extends BaseMapper<User> {

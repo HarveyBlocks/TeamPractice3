@@ -10,6 +10,7 @@ import com.harvey.se.pojo.dto.GiftDto;
 import com.harvey.se.pojo.dto.GiftInfoDto;
 import com.harvey.se.pojo.dto.UserDto;
 import com.harvey.se.pojo.entity.Gift;
+import com.harvey.se.pojo.enums.PointChangeReason;
 import com.harvey.se.pojo.vo.IntRange;
 import com.harvey.se.service.GiftService;
 import com.harvey.se.service.ServiceUtil;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 /**
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-11-08 06:55
+ * @date 2025-11-11
  * @see Gift
  * @see GiftMapper
  * @see GiftService
@@ -77,7 +78,7 @@ public class GiftServiceImpl extends ServiceImpl<GiftMapper, Gift> implements Gi
             throw new BadRequestException("商品已售罄");
         }
         // 2. 用户point减少
-        userService.increasePoint(user.getId(), user.getPoints(), -gift.getCost());
+        userService.increasePoint(user.getId(), PointChangeReason.CONSUME, user.getPoints(), -gift.getCost());
         // 3. 使货物减少
         boolean updated = new LambdaUpdateChainWrapper<>(baseMapper).set(Gift::getStorage, gift.getStorage() - 1)
                 .eq(Gift::getId, giftId)

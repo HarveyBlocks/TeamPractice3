@@ -10,6 +10,7 @@ import com.harvey.se.pojo.dto.ChatMessageDto;
 import com.harvey.se.pojo.dto.ChatTextPiece;
 import com.harvey.se.pojo.dto.ConsultationContentDto;
 import com.harvey.se.pojo.dto.UserDto;
+import com.harvey.se.pojo.enums.PointChangeReason;
 import com.harvey.se.properties.RobotChatProperties;
 import com.harvey.se.service.ChatMessageService;
 import com.harvey.se.service.ConsultationContentService;
@@ -38,7 +39,7 @@ import java.util.stream.Collectors;
 /**
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-11-09 02:29
+ * @date 2025-11-11
  */
 @Service
 @Slf4j
@@ -86,7 +87,7 @@ public class RobotChatServiceImpl implements RobotChatService {
         }
         try {
             // 1. 加分
-            pointService.add(RedisConstants.Point.CHAT, user, 5, 5, 1, TimeUnit.DAYS);
+            pointService.add(PointChangeReason.CHAT, user, 5, 5, 1, TimeUnit.DAYS);
             // 2. 聊天
             executeChat(chatId, user.getId(), message, chatIndex);
         } catch (NoApiKeyException | InputRequiredException e) {
@@ -184,7 +185,7 @@ public class RobotChatServiceImpl implements RobotChatService {
                jacksonUtil.toJsonStr(consultationContentDto) +
                "`, 请你依据这些信息给用户提出一些建议. 用户的具体问题如下(" +
                "用户具体问题如果和背景信息冲突, 具体问题的优先级更高. " +
-               "如果用户的具体问题和购车咨询无关, 请你回答`我只做购车有关咨询, 这方面我并不了解`): " +
+               "如果用户的具体问题和购车咨询无关, 请你回答`我只做购车有关咨询, 这方面我并不了解`, 但这个要求的限制也不是特别严格...): " +
                message;
     }
 

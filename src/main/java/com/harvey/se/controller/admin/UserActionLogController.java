@@ -28,7 +28,7 @@ import java.util.List;
  *
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-11-08 00:44
+ * @date 2025-11-11
  */
 @Slf4j
 @RestController
@@ -41,37 +41,39 @@ public class UserActionLogController {
     @Resource
     private ConstantsInitializer constantsInitializer;
 
-    @GetMapping(value = {"/cost/{longer-than}/{limit}/{page}", "/cost/{longer-than}/{limit}", "/cost/{longer-than}"})
+    @GetMapping(
+            value = {"/cost/{longer-than}/{limit}/{page}", /*"/cost/{longer-than}/{limit}", "/cost/{longer-than}"*/})
     @ApiOperation("查询请求消耗时间大于某段时长的请求记录")
     @ApiResponse(code = 200, message = "返回在从花费长到花费短")
     public Result<List<UserActionLogDto>> longCost(
-            @PathVariable(value = "longer-than")
+            @PathVariable(value = "longer-than", required = true)
             @ApiParam(value = "长度大于此毫秒数(包括)的, 将被返回", required = true) Integer longerThan,
-            @PathVariable(value = "limit", required = false)
-            @ApiParam(value = "页长", defaultValue = ServerConstants.DEFAULT_PAGE_SIZE) Integer limit,
-            @PathVariable(value = "page", required = false) @ApiParam(value = "页号", defaultValue = "1")
-            Integer page) {
+            @PathVariable(value = "limit", required = true)
+            @ApiParam(value = "页长", defaultValue = ServerConstants.DEFAULT_PAGE_SIZE, required = true) Integer limit,
+            @PathVariable(value = "page", required = true)
+            @ApiParam(value = "页号", defaultValue = "1", required = true) Integer page) {
         // 在服务器消费耗费长的操作
         // 倒序排序
         return new Result<>(userActionLogService.longCost(longerThan, constantsInitializer.initPage(page, limit)));
     }
 
 
-    @GetMapping(value = {"/request-time-latest/{time-from}/{time-to}/{limit}/{page}",
+    @GetMapping(value = {"/request-time-latest/{time-from}/{time-to}/{limit}/{page}",/*
             "/request-time-latest/{time-from}/{time-to}/{limit}", "/request-time-latest/{time-from}/{time-to}",
-            "/request-time-latest/{time-from}", "/request-time-latest",})
+            "/request-time-latest/{time-from}", "/request-time-latest",*/})
     @ApiOperation("查询一定时间内的用户行为日志")
     @ApiResponse(code = 200, message = "按照时间排序, 返回的时间顺序和参数的from-to一致")
     public Result<List<UserActionLogDto>> getLatestActionByRequestTimeRange(
-            @PathVariable(value = "time-from", required = false)
-            @ApiParam(value = "日期查询的起点(包含)", example = ServerConstants.DATE_TIME_FORMAT_STRING)
-            String timeFrom,
-            @PathVariable(value = "time-to", required = false)
-            @ApiParam(value = "日期查询的终点(包含)", example = ServerConstants.DATE_TIME_FORMAT_STRING) String timeTo,
-            @PathVariable(value = "limit", required = false)
-            @ApiParam(value = "页长", defaultValue = ServerConstants.DEFAULT_PAGE_SIZE) Integer limit,
-            @PathVariable(value = "page", required = false) @ApiParam(value = "页号", defaultValue = "1")
-            Integer page) {
+            @PathVariable(value = "time-from", required = true)
+            @ApiParam(value = "日期查询的起点(包含)", example = ServerConstants.DATE_TIME_FORMAT_STRING,
+                    required = true) String timeFrom,
+            @PathVariable(value = "time-to", required = true)
+            @ApiParam(value = "日期查询的终点(包含)", example = ServerConstants.DATE_TIME_FORMAT_STRING,
+                    required = true) String timeTo,
+            @PathVariable(value = "limit", required = true)
+            @ApiParam(value = "页长", defaultValue = ServerConstants.DEFAULT_PAGE_SIZE, required = true) Integer limit,
+            @PathVariable(value = "page", required = true)
+            @ApiParam(value = "页号", defaultValue = "1", required = true) Integer page) {
         // 依据请求发送的时间查询, 从新到旧排序
         DateRange dateRange;
         try {

@@ -1,7 +1,7 @@
 package com.harvey.se.controller.admin;
 
 import com.harvey.se.pojo.dto.ConsultationContentDto;
-import com.harvey.se.pojo.dto.ConsultationContentWithUserEntityDto;
+import com.harvey.se.pojo.dto.ConsultationContentWithUserInfoDto;
 import com.harvey.se.pojo.dto.HotWordDto;
 import com.harvey.se.pojo.dto.UserInfoDto;
 import com.harvey.se.pojo.entity.User;
@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-11-08 00:46
+ * @date 2025-11-11
  */
 @Slf4j
 @RestController
@@ -64,13 +64,13 @@ public class ConsultationContentAdminController {
         return new Result<>(consultationContentService.queryByUser(userId));
     }
 
-    @GetMapping({"/all/{limit}/{page}", "/all/{limit}", "/all"})
+    @GetMapping({"/all/{limit}/{page}"/*, "/all/{limit}", "/all"*/})
     @ApiOperation(value = "分页查询用户咨询")
     public Result<List<ConsultationContentDto>> consultation(
-            @PathVariable(value = "limit", required = false)
-            @ApiParam(value = "页长", defaultValue = ServerConstants.DEFAULT_PAGE_SIZE) Integer limit,
-            @PathVariable(value = "page", required = false) @ApiParam(value = "页号", defaultValue = "1")
-            Integer page) {
+            @PathVariable(value = "limit", required = true)
+            @ApiParam(value = "页长", defaultValue = ServerConstants.DEFAULT_PAGE_SIZE, required = true) Integer limit,
+            @PathVariable(value = "page", required = true)
+            @ApiParam(value = "页号", defaultValue = "1", required = true) Integer page) {
         // 不提供就使用默认值
         return new Result<>(consultationContentService.queryByPage(constantsInitializer.initPage(page, limit)));
     }
@@ -78,23 +78,23 @@ public class ConsultationContentAdminController {
 
     @GetMapping(value = "/combine/{id}")
     @ApiOperation(value = "依据某一用户的ID查询该用户的用户信息和购车咨询信息")
-    public Result<ConsultationContentWithUserEntityDto> combineById(
+    public Result<ConsultationContentWithUserInfoDto> combineById(
             @PathVariable(value = "id") @ApiParam("用户id") Long userId) {
         // 不提供就使用默认值
         ConsultationContentDto consultationContentDto = consultationContentService.queryByUser(userId);
-        UserInfoDto userInfoDto = userService.queryUserEntityById(userId);
-        return new Result<>(ConsultationContentWithUserEntityDto.combine(consultationContentDto, userInfoDto));
+        UserInfoDto userInfoDto = userService.queryUserInfoById(userId);
+        return new Result<>(ConsultationContentWithUserInfoDto.combine(consultationContentDto, userInfoDto));
     }
 
 
-    @GetMapping({"/combine/all/{limit}/{page}", "/combine/all/{limit}", "/combine/all"})
+    @GetMapping({"/combine/all/{limit}/{page}",/* "/combine/all/{limit}", "/combine/all"*/})
     @ApiOperation(value = "分页查询用户信息和咨询的联合信息")
     @ApiResponse(message = "包含用户信息和咨询信息", code = 200)
-    public Result<List<ConsultationContentWithUserEntityDto>> combineByPage(
-            @PathVariable(value = "limit", required = false)
-            @ApiParam(value = "页长", defaultValue = ServerConstants.DEFAULT_PAGE_SIZE) Integer limit,
-            @PathVariable(value = "page", required = false) @ApiParam(value = "页号", defaultValue = "1")
-            Integer page) {
+    public Result<List<ConsultationContentWithUserInfoDto>> combineByPage(
+            @PathVariable(value = "limit", required = true)
+            @ApiParam(value = "页长", defaultValue = ServerConstants.DEFAULT_PAGE_SIZE, required = true) Integer limit,
+            @PathVariable(value = "page", required = true)
+            @ApiParam(value = "页号", defaultValue = "1", required = true) Integer page) {
         // 不提供就使用默认值
         List<User> userList = userService.queryUserByPage(constantsInitializer.initPage(page, limit));
         return new Result<>(consultationContentService.combineWithUsers(userList));

@@ -16,7 +16,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-05-08 12:12
+ * @date 2025-11-11
  */
 public class JacksonUtil {
     public static final PrintStream OUT = System.out;

@@ -26,7 +26,7 @@ import java.util.List;
  *
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-11-08 01:21
+ * @date 2025-11-11
  */
 @Slf4j
 @RestController
@@ -40,21 +40,22 @@ public class AdminFeedbackController {
     @Resource
     private FeedbackService feedbackService;
 
-    @GetMapping(value = {"/not-read/{time-from}/{time-to}/{limit}/{page}",
+    @GetMapping(value = {"/not-read/{time-from}/{time-to}/{limit}/{page}",/*
             "/not-read/{time-from}/{time-to}/{limit}", "/not-read/{time-from}/{time-to}",
-            "/not-read/{time-from}", "/not-read",})
+            "/not-read/{time-from}", "/not-read",*/})
     @ApiOperation("查询一定时间内的未读的用户反馈")
     @ApiResponse(code = 200, message = "按照时间排序, 返回的时间顺序和参数的from-to一致")
     public Result<List<FeedbackDto>> getFeedbackDtoByTimeRange(
-            @PathVariable(value = "time-from", required = false)
-            @ApiParam(value = "日期查询的起点(包含)", example = ServerConstants.DATE_TIME_FORMAT_STRING)
-            String timeFrom,
-            @PathVariable(value = "time-to", required = false)
-            @ApiParam(value = "日期查询的终点(包含)", example = ServerConstants.DATE_TIME_FORMAT_STRING) String timeTo,
-            @PathVariable(value = "limit", required = false)
-            @ApiParam(value = "页长", defaultValue = ServerConstants.DEFAULT_PAGE_SIZE) Integer limit,
-            @PathVariable(value = "page", required = false) @ApiParam(value = "页号", defaultValue = "1")
-            Integer page) {
+            @PathVariable(value = "time-from", required = true)
+            @ApiParam(value = "日期查询的起点(包含)", example = ServerConstants.DATE_TIME_FORMAT_STRING,
+                    required = true) String timeFrom,
+            @PathVariable(value = "time-to", required = true)
+            @ApiParam(value = "日期查询的终点(包含)", example = ServerConstants.DATE_TIME_FORMAT_STRING,
+                    required = true) String timeTo,
+            @PathVariable(value = "limit", required = true)
+            @ApiParam(value = "页长", defaultValue = ServerConstants.DEFAULT_PAGE_SIZE, required = true) Integer limit,
+            @PathVariable(value = "page", required = true)
+            @ApiParam(value = "页号", defaultValue = "1", required = true) Integer page) {
         // 依据请求发送的时间查询
         DateRange dateRange;
         try {
@@ -69,21 +70,21 @@ public class AdminFeedbackController {
         ));
     }
 
-    @GetMapping(value = {"/read/{time-from}/{time-to}/{limit}/{page}",
-            "/read/{time-from}/{time-to}/{limit}", "/read/{time-from}/{time-to}",
-            "/read/{time-from}", "/read",})
+    @GetMapping(value = {"/read/{time-from}/{time-to}/{limit}/{page}"/*, "/read/{time-from}/{time-to}/{limit}",
+            "/read/{time-from}/{time-to}", "/read/{time-from}", "/read",*/})
     @ApiOperation("查询一定时间内的已读的用户反馈")
     @ApiResponse(code = 200, message = "按照时间排序, 返回的时间顺序和参数的from-to一致")
     public Result<List<FeedbackDto>> getReadFeedbackDtoByTimeRange(
-            @PathVariable(value = "time-from", required = false)
-            @ApiParam(value = "日期查询的起点(包含)", example = ServerConstants.DATE_TIME_FORMAT_STRING)
-            String timeFrom,
-            @PathVariable(value = "time-to", required = false)
-            @ApiParam(value = "日期查询的终点(包含)", example = ServerConstants.DATE_TIME_FORMAT_STRING) String timeTo,
-            @PathVariable(value = "limit", required = false)
-            @ApiParam(value = "页长", defaultValue = ServerConstants.DEFAULT_PAGE_SIZE) Integer limit,
-            @PathVariable(value = "page", required = false) @ApiParam(value = "页号", defaultValue = "1")
-            Integer page) {
+            @PathVariable(value = "time-from", required = true)
+            @ApiParam(value = "日期查询的起点(包含)", example = ServerConstants.DATE_TIME_FORMAT_STRING,
+                    required = true) String timeFrom,
+            @PathVariable(value = "time-to", required = true)
+            @ApiParam(value = "日期查询的终点(包含)", example = ServerConstants.DATE_TIME_FORMAT_STRING,
+                    required = true) String timeTo,
+            @PathVariable(value = "limit", required = true)
+            @ApiParam(value = "页长", defaultValue = ServerConstants.DEFAULT_PAGE_SIZE, required = true) Integer limit,
+            @PathVariable(value = "page", required = true)
+            @ApiParam(value = "页号", defaultValue = "1", required = true) Integer page) {
         // 已读的
         DateRange dateRange;
         try {
@@ -94,16 +95,17 @@ public class AdminFeedbackController {
         return new Result<>(feedbackService.queryFeedback(dateRange, constantsInitializer.initPage(page, limit), true));
     }
 
-    @GetMapping(value = {"/user/{user-id}/{read}/{limit}/{page}", "/user/{user-id}/{read}/{limit}",
-            "/user/{user-id}/{read}", "/user/{user-id}"})
+    @GetMapping(value = {"/user/{user-id}/{read}/{limit}/{page}", /*"/user/{user-id}/{read}/{limit}",
+            "/user/{user-id}/{read}", "/user/{user-id}"*/})
     @ApiOperation("查询某一个特定用户的反馈")
     public Result<List<FeedbackDto>> getByUserId(
             @PathVariable(value = "user-id") @ApiParam(value = "用户id", required = true) Long userId,
-            @PathVariable(value = "read", required = false) @ApiParam(value = "默认null, 表示两个都查") Boolean read,
-            @PathVariable(value = "limit", required = false)
-            @ApiParam(value = "页长", defaultValue = ServerConstants.DEFAULT_PAGE_SIZE) Integer limit,
-            @PathVariable(value = "page", required = false) @ApiParam(value = "页号", defaultValue = "1")
-            Integer page) {
+            @PathVariable(value = "read", required = true) @ApiParam(value = "是否已读的boolean值", required = true)
+            Boolean read,
+            @PathVariable(value = "limit", required = true)
+            @ApiParam(value = "页长", defaultValue = ServerConstants.DEFAULT_PAGE_SIZE, required = true) Integer limit,
+            @PathVariable(value = "page", required = true)
+            @ApiParam(value = "页号", defaultValue = "1", required = true) Integer page) {
         return new Result<>(feedbackService.queryFeedback(userId, constantsInitializer.initPage(page, limit), read));
     }
 

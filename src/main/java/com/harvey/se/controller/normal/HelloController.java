@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-11-04 20:05
+ * @date 2025-11-11
  */
 @Slf4j
 @RestController
@@ -25,7 +25,7 @@ public class HelloController {
 
     @ApiOperation("回声")
     @GetMapping("/echo/{message}")
-    public Result<String> hello(@PathVariable("message") @ApiParam("信息, 会被回声") String message) {
+    public Result<String> hello(@PathVariable("message") @ApiParam(value = "信息, 会被回声",required = true) String message) {
         return new Result<>(message);
     }
 }

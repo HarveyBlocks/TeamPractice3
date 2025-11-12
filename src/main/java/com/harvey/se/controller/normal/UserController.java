@@ -3,13 +3,16 @@ package com.harvey.se.controller.normal;
 import com.harvey.se.exception.BadRequestException;
 import com.harvey.se.exception.ResourceNotFountException;
 import com.harvey.se.pojo.dto.LoginFormDto;
+import com.harvey.se.pojo.dto.PointsHistoryDto;
 import com.harvey.se.pojo.dto.UpsertUserFormDto;
 import com.harvey.se.pojo.dto.UserDto;
 import com.harvey.se.pojo.entity.User;
 import com.harvey.se.pojo.vo.Null;
 import com.harvey.se.pojo.vo.Result;
 import com.harvey.se.properties.ConstantsProperties;
+import com.harvey.se.service.PointService;
 import com.harvey.se.service.UserService;
+import com.harvey.se.util.ConstantsInitializer;
 import com.harvey.se.util.RedisConstants;
 import com.harvey.se.util.ServerConstants;
 import com.harvey.se.util.UserHolder;
@@ -22,16 +25,18 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.CharacterIterator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2024-02-01 14:09
+ * @date 2025-11-11
  */
 @Slf4j
 @RestController
-@Api(tags = "用户登录校验")
+@Api(tags = "用户登录校验即积分信息")
 @RequestMapping("/user")
 @EnableConfigurationProperties(ConstantsProperties.class)
 public class UserController {
@@ -158,7 +163,7 @@ public class UserController {
     /**
      * UserController 根据id查询用户
      */
-    @GetMapping("/{id}")
+    @GetMapping("/one/{id}")
     @ApiOperation("根据id查询用户")
     public Result<UserDto> queryUserById(@PathVariable("id") @ApiParam(required = true) Long userId) {
         UserDto userDTO;
@@ -174,5 +179,23 @@ public class UserController {
         return new Result<>(userDTO);
     }
 
+    @Resource
+    private PointService pointService;
+
+    @Resource
+    private ConstantsInitializer constantsInitializer;
+
+    @GetMapping({"/points/history/{limit}/{page}", /*"/points/history/{limit}", "/points/history"*/})
+    @ApiOperation("查询当前用户的积分历史")
+    public Result<List<PointsHistoryDto>> queryPointsHistory(
+            @PathVariable(value = "limit", required = true)
+            @ApiParam(value = "页长", defaultValue = ServerConstants.DEFAULT_PAGE_SIZE, required = true) Integer limit,
+            @PathVariable(value = "page", required = true)
+            @ApiParam(value = "页号", defaultValue = "1", required = true) Integer page) {
+        return new Result<>(pointService.queryHistory(
+                UserHolder.currentUserId(),
+                constantsInitializer.initPage(page, limit)
+        ));
+    }
 
 }

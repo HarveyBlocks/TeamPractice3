@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 /**
  * @author <a href="mailto:harvey.blocks@outlook.com">Harvey Blocks</a>
  * @version 1.0
- * @date 2025-11-08 06:55
+ * @date 2025-11-11
  * @see Feedback
  * @see FeedbackMapper
  * @see FeedbackService
@@ -86,6 +86,6 @@ public class FeedbackServiceImpl extends ServiceImpl<FeedbackMapper, Feedback> i
         }
         // 2. 增加缓存标记
         // 一小时只能反馈一次
-        stringRedisTemplate.opsForValue().set(flagKey, flagKey, 1, TimeUnit.HOURS);
+        stringRedisTemplate.opsForValue().set(flagKey, "", 1, TimeUnit.HOURS);
     }
 }
